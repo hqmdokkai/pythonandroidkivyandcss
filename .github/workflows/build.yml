@@ -53,7 +53,5 @@ jobs:
         # Kiểm tra xem có thay đổi nào không trước khi commit
         git diff --exit-code dist/* || git commit -m "Add built application files"
 
-        # Đẩy lên repo bằng token trực tiếp
-        git push https://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@github.com/hqmdokkai/pythonandroidkivyandcss.git
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Bạn có thể thay thế bằng token trực tiếp ở đây nếu muốn
+        # Đẩy lên repo sử dụng token mặc định từ GitHub Actions
+        git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
