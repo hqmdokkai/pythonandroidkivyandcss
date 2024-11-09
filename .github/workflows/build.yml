@@ -1,4 +1,4 @@
-name: Build Kivy Application for Windows with PyInstaller
+name: Build Ứng dụng Kivy cho Debian bằng PyInstaller
 
 on:
   push:
@@ -10,28 +10,25 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest  # Chạy trên Windows
+    runs-on: ubuntu-latest  # Chạy trên Ubuntu, nhưng chúng ta sẽ sử dụng Docker container Debian
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-
-      - name: Install dependencies for Kivy and PyInstaller
+      - name: Thiết lập Docker với Debian
         run: |
-          python -m pip install --upgrade pip
-          pip install kivy pyinstaller
+          docker pull debian:latest  # Kéo Docker image Debian mới nhất
+          docker run --rm -v $PWD:/workspace -w /workspace debian:latest bash -c "
+            apt-get update &&
+            apt-get install -y python3 python3-pip python3-venv &&
+            pip install --upgrade pip &&
+            pip install kivy pyinstaller &&
+            pyinstaller --onefile main.py
+          "  # Cài đặt các thư viện và chạy PyInstaller trong môi trường Debian
 
-      - name: Build Application with PyInstaller
-        run: |
-          pyinstaller --onefile main.py  # Đóng gói ứng dụng với PyInstaller
-
-      - name: Upload Build Artifact (Windows .exe)
+      - name: Upload Build Artifact (file nhị phân cho Debian)
         uses: actions/upload-artifact@v3
         with:
-          name: kivy-windows-build
-          path: dist/main.exe  # Đảm bảo tên tệp đúng, mặc định là 'main.exe'
+          name: kivy-debian-build
+          path: dist/main  # Đảm bảo tên tệp đúng, là file nhị phân chạy trên Debian
