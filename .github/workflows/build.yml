@@ -33,6 +33,14 @@ jobs:
           brew install libffi
           brew install coreutils
 
+      - name: Install Android SDK (if needed)
+        run: |
+          brew install --cask android-sdk  # Cài đặt Android SDK
+          export ANDROID_HOME="/usr/local/share/android-sdk"
+          export PATH="$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$PATH"
+          echo "ANDROID_HOME is set to $ANDROID_HOME"
+          echo "PATH is set to $PATH"
+
       - name: Install Kivy and Buildozer
         run: |
           python -m pip install --upgrade pip
