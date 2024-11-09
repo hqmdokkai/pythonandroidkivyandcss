@@ -24,7 +24,7 @@ jobs:
       - name: Install dependencies for Buildozer
         run: |
           brew install python@3.10
-          brew install openjdk@11
+          brew install openjdk@8  # Cài đặt JDK 8
           brew install libjpeg
           brew install pkg-config
           brew install sdl2
@@ -48,9 +48,9 @@ jobs:
           pip install cython  # Cài Cython tại đây
           buildozer --version  # Kiểm tra nếu buildozer đã được cài đặt
 
-      - name: Set up Java environment (JDK 11)
+      - name: Set up Java environment (JDK 8)
         run: |
-          export JAVA_HOME=$(/usr/libexec/java_home -v 11)
+          export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
           export PATH=$JAVA_HOME/bin:$PATH
           echo "JAVA_HOME is set to $JAVA_HOME"
 
