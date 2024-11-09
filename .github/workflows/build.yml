@@ -1,4 +1,4 @@
-name: Build Ứng dụng Kivy cho Ubuntu bằng PyInstaller
+name: Build Kivy App with PyInstaller
 
 on:
   push:
@@ -10,33 +10,39 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # Chạy trên Ubuntu
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Cài đặt Python và tạo môi trường ảo
-        run: |
-          # Cập nhật và cài đặt Python3, pip, và môi trường ảo
-          sudo apt update
-          sudo apt install -y python3.10 python3.10-venv python3-pip
-          python3.10 -m venv venv  # Tạo môi trường ảo
-          source venv/bin/activate  # Kích hoạt môi trường ảo
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
 
-      - name: Cài đặt các thư viện phụ thuộc cho Kivy và PyInstaller
-        run: |
-          source venv/bin/activate  # Kích hoạt lại môi trường ảo
-          pip install --upgrade pip
-          pip install kivy pyinstaller
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential libgtk-3-0 libglib2.0-0 libsm6 libxext6 libxrender-dev
 
-      - name: Build ứng dụng bằng PyInstaller
-        run: |
-          source venv/bin/activate  # Kích hoạt lại môi trường ảo
-          pyinstaller --onefile main.py  # Đóng gói ứng dụng thành file nhị phân
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install kivy --no-cache-dir  # Cài đặt kivy và các phụ thuộc của nó
 
-      - name: Upload Build Artifact (file nhị phân cho Ubuntu)
-        uses: actions/upload-artifact@v3
-        with:
-          name: kivy-ubuntu-build
-          path: dist/main  # Đảm bảo tên tệp đúng cho file nhị phân trên Ubuntu
+    - name: Install PyInstaller
+      run: |
+        pip install pyinstaller --no-cache-dir
+
+    - name: Check installed packages
+      run: pip list  # Kiểm tra các gói đã được cài đặt
+
+    - name: Run PyInstaller to build the app
+      run: pyinstaller --onefile main.py
+
+    - name: Upload the built application
+      uses: actions/upload-artifact@v3
+      with:
+        name: kivy-app
+        path: dist/main
