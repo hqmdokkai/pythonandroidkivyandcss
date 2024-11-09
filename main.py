@@ -5,7 +5,10 @@ from kivy.uix.button import Button
 from kivy.uix.scrollview import ScrollView
 from kivy.core.window import Window
 import subprocess
+kivy.require('2.1.0')  # Chọn phiên bản phù hợp với bạn
 
+from kivy.config import Config
+Config.set('graphics', 'renderer', 'mock')
 # Đặt màu nền toàn bộ ứng dụng
 Window.clearcolor = (0, 0, 0, 1)  # Đen
 
