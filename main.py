@@ -1,67 +1,61 @@
-from kivy.app import App
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.textinput import TextInput
-from kivy.uix.button import Button
-from kivy.uix.scrollview import ScrollView
-from kivy.core.window import Window
+import tkinter as tk
+from tkinter import scrolledtext
 import subprocess
-Window.clearcolor = (0, 0, 0, 1)  # Đen
 
-class TerminalApp(App):
+class TerminalApp:
 
-    def build(self):
-        # Tạo layout chính chia màn hình theo chiều dọc
-        main_layout = BoxLayout(orientation='vertical')
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Terminal App")
+        self.root.configure(bg='black')
 
-        # Tạo một layout cho phần terminal
-        terminal_layout = BoxLayout(orientation='vertical', size_hint_y=0.5)
-        
-        # Tạo ScrollView để cuộn nội dung
-        self.scroll_view = ScrollView(size_hint=(1, 1), do_scroll_x=False)
-        self.terminal_output = TextInput(font_size=20,
-                                         readonly=True,
-                                         background_color=(0, 0, 0, 1),
-                                         foreground_color=(1, 1, 1, 1),
-                                         size_hint_y=None)
-        self.terminal_output.bind(
-            minimum_height=self.terminal_output.setter('height'))
-        self.scroll_view.add_widget(self.terminal_output)
-        terminal_layout.add_widget(self.scroll_view)
-        
-        # Tạo layout cho phần nhập lệnh và nút
-        command_layout = BoxLayout(orientation='vertical', size_hint_y=0.5)
+        # Tạo layout chính
+        self.main_frame = tk.Frame(self.root, bg='black')
+        self.main_frame.pack(fill=tk.BOTH, expand=True)
 
-        # TextInput để nhập lệnh
-        self.command_input = TextInput(hint_text="Enter command here",
-                                       multiline=False,
-                                       size_hint=(1, None),
-                                       height=50,
-                                       background_color=(0, 0, 0, 1),
-                                       foreground_color=(1, 1, 1, 1))
-        command_layout.add_widget(self.command_input)
+        # Tạo phần terminal với Scrollable Text
+        self.terminal_frame = tk.Frame(self.main_frame, bg='black')
+        self.terminal_frame.pack(fill=tk.BOTH, expand=True)
 
-        # Nút để thực thi lệnh
-        run_button = Button(text="Run Command", size_hint=(1, None), height=50)
-        run_button.bind(on_press=self.run_command)
-        command_layout.add_widget(run_button)
+        self.terminal_output = scrolledtext.ScrolledText(self.terminal_frame, 
+                                                         wrap=tk.WORD,
+                                                         font=("Courier", 14),
+                                                         bg='black', 
+                                                         fg='white', 
+                                                         state=tk.DISABLED)
+        self.terminal_output.pack(fill=tk.BOTH, expand=True)
 
-        # Thêm cả hai layout vào main_layout
-        main_layout.add_widget(terminal_layout)
-        main_layout.add_widget(command_layout)
+        # Tạo phần nhập lệnh
+        self.command_frame = tk.Frame(self.main_frame, bg='black')
+        self.command_frame.pack(fill=tk.X)
 
-        return main_layout
+        self.command_input = tk.Entry(self.command_frame, 
+                                      bg='black', 
+                                      fg='white', 
+                                      font=("Courier", 14), 
+                                      bd=0, 
+                                      insertbackground='white')
+        self.command_input.pack(fill=tk.X, pady=10, padx=10)
 
-    def run_command(self, instance):
-        command = self.command_input.text.strip()
+        self.run_button = tk.Button(self.command_frame, 
+                                    text="Run Command", 
+                                    bg='black', 
+                                    fg='white', 
+                                    font=("Courier", 14), 
+                                    command=self.run_command)
+        self.run_button.pack(fill=tk.X)
+
+    def run_command(self):
+        command = self.command_input.get().strip()
 
         if "sudo" in command or "su" in command:
             result = "Security alert: Running 'sudo' or 'su' commands is not allowed for security reasons."
         else:
             try:
                 # Chạy lệnh và lấy kết quả
-                result = subprocess.run(command,
-                                        shell=True,
-                                        capture_output=True,
+                result = subprocess.run(command, 
+                                        shell=True, 
+                                        capture_output=True, 
                                         text=True)
                 result_text = result.stdout + result.stderr
             except Exception as e:
@@ -70,11 +64,18 @@ class TerminalApp(App):
             result = f"$ {command}\n{result_text}"
 
         # Hiển thị kết quả
-        self.terminal_output.text += f"{result}\n"
-        self.command_input.text = ""  # Xóa nội dung ô nhập lệnh
+        self.terminal_output.config(state=tk.NORMAL)
+        self.terminal_output.insert(tk.END, f"{result}\n")
+        self.terminal_output.config(state=tk.DISABLED)
+        
+        # Cuộn xuống cuối
+        self.terminal_output.yview(tk.END)
 
-        # Cuộn xuống cuối cùng
-        self.scroll_view.scroll_to(self.terminal_output)
+        # Xóa nội dung ô nhập lệnh
+        self.command_input.delete(0, tk.END)
+
 
 if __name__ == '__main__':
-    TerminalApp().run()
+    root = tk.Tk()
+    app = TerminalApp(root)
+    root.mainloop()
