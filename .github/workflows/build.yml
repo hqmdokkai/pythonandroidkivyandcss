@@ -24,7 +24,6 @@ jobs:
       - name: Install dependencies for Buildozer
         run: |
           brew install python@3.10
-          brew install openjdk@8  # Cài đặt JDK 8
           brew install libjpeg
           brew install pkg-config
           brew install sdl2
@@ -32,6 +31,9 @@ jobs:
           brew install cairo
           brew install libffi
           brew install coreutils
+          
+          # Cài đặt openjdk ARM cho macOS M1/M2
+          brew install openjdk@8
 
       - name: Install Android SDK (if needed)
         run: |
