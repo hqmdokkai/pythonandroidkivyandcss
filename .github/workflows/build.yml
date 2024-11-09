@@ -46,6 +46,10 @@ jobs:
           export PATH=$JAVA_HOME/bin:$PATH
           echo "JAVA_HOME is set to $JAVA_HOME"
 
+      - name: Accept Android SDK Licenses
+        run: |
+          yes | sdkmanager --licenses  # Chấp nhận tất cả giấy phép Android SDK
+
       - name: Run Buildozer to Build APK
         run: |
           buildozer android debug  # Tạo APK bằng Buildozer
