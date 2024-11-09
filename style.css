@@ -1,0 +1,19 @@
+/* style.css */
+textinput {
+    font-size: 18px;
+    color: #333333;
+    background-color: #ffffff;
+    padding: 10px;
+}
+
+button {
+    font-size: 18px;
+    color: #ffffff;
+    background-color: #007bff;
+    padding: 10px;
+}
+
+label {
+    font-size: 18px;
+    color: #333333;
+}
